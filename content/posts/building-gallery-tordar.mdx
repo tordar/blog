@@ -1,0 +1,22 @@
+---
+title: "Building gallery.tordar.no"
+date: 2026-03-31
+tags: [projects, technical]
+summary: "How I built my concert photography portfolio with Next.js, from image management to responsive galleries."
+---
+
+When I started photographing concerts, I needed a place to showcase my work that felt intentional — not just a social media feed. I wanted full control over layout, loading performance, and how the images were presented.
+
+## Choosing the stack
+
+I went with Next.js and Tailwind CSS — the same stack as my portfolio. This meant I could move fast and reuse patterns I already knew. For image management, I built a simple admin panel with upload scripts rather than using a CMS.
+
+The gallery uses a responsive grid that adapts from a single column on mobile to three columns on desktop. Each image is lazy-loaded with a blur placeholder generated at build time.
+
+## Image optimization
+
+Concert photos are typically shot in RAW at high ISO, which means large files and visible noise. I set up a pipeline that exports to WebP, generates multiple sizes for responsive `srcset` attributes, and creates the blur placeholders — all before the images hit the repo.
+
+## Deployment
+
+The whole thing deploys to Vercel on every push to main. The photography portfolio is a separate repo from my main portfolio — each subdomain is its own project, its own deployment, its own concern. This keeps things clean and means I can iterate on the gallery without touching anything else.
