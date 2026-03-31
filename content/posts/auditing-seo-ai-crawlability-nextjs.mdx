@@ -1,0 +1,249 @@
+---
+title: "From 32 to 70: Auditing and Fixing SEO & AI Crawlability on a Next.js Portfolio"
+date: 2026-03-31
+tags: [technical]
+summary: "A full SEO and GEO audit on my Next.js portfolio — from Cloudflare silently blocking AI crawlers to structured data, llms.txt, and the limits of technical fixes."
+---
+
+## The starting point
+
+I ran a full SEO and GEO (Generative Engine Optimization) audit on my personal portfolio at tordar.no — a Next.js 14 App Router site hosted on Vercel behind Cloudflare. The results were worse than expected, especially on the AI readiness side.
+
+Starting scores:
+- Technical SEO: 68/100
+- Schema / Structured Data: 38/100
+- Content Quality (E-E-A-T): 58/100
+- GEO / AI Readiness: 32/100
+
+The audit used the [claude-seo](https://github.com/AgriciDaniel/claude-seo) plugin for Claude Code, which spawns parallel specialist subagents covering technical SEO, schema, content quality, and GEO in a single pass.
+
+## What GEO actually means
+
+Before getting into fixes, it's worth clarifying what GEO is. Traditional SEO optimises for Google's ranking algorithm. GEO optimises for AI systems — ChatGPT, Perplexity, Claude, Google AI Overviews — that retrieve and summarise content in response to conversational queries.
+
+The signals are different. Ranking algorithms care about backlinks, keywords, and PageRank. AI systems care about:
+- Whether they can actually crawl your site (robots.txt)
+- Whether your content contains extractable, citable prose passages
+- Whether your structured data clearly identifies who you are as an entity
+- Whether you have a llms.txt file — an emerging standard that gives AI crawlers a plain-text brief about your site
+
+A site can rank well on Google and score near zero on GEO. That was roughly the situation here.
+
+## Issue 1: Cloudflare was silently blocking every AI crawler
+
+This was the single biggest problem, and the most invisible.
+
+My local `public/robots.txt` was perfectly permissive — `Allow: /` for all bots. But Cloudflare's "Managed robots.txt" feature was injecting a block list before any crawler ever saw my file:
+
+```
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+```
+
+This meant GPTBot (ChatGPT), ClaudeBot (Anthropic), Google-Extended (Google AI Overviews), and five other major AI crawlers were being turned away at the door. The site was essentially invisible to every AI-powered search system.
+
+**Fix:** Cloudflare dashboard → Security → AI Crawl Control → disable "Managed robots.txt."
+
+After disabling it, I also added explicit Allow entries for each crawler rather than relying on the wildcard alone — explicit intent is a stronger trust signal than implicit fallthrough:
+
+```
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+```
+
+## Issue 2: The structured data was technically present but strategically weak
+
+The site had a Person schema with 4 fields. That's enough to not fail validation, but not enough to meaningfully help Google build an entity graph.
+
+Before:
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Tordar Tømmervik",
+  "url": "https://tordar.no",
+  "sameAs": ["https://github.com/tordar", "https://linkedin.com/in/tordar"],
+  "jobTitle": "Full-stack developer",
+  "worksFor": { "@type": "Organization", "name": "Umain" },
+  "knowsAbout": ["React", "Next.js", "JavaScript", "Web Development"]
+}
+```
+
+Issues found:
+- LinkedIn URL missing `www.` — a redirect, not the canonical URL
+- No image — Google uses this for Knowledge Panel thumbnails
+- No description — the primary prose passage AI systems extract
+- `worksFor` had no url — Umain was an unresolvable string
+- Only 4 `knowsAbout` items
+- No WebSite or ProfilePage schema
+
+After: Upgraded to a full `@graph` with three linked entities:
+
+```json
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://tordar.no/#person",
+      "name": "Tordar Tømmervik",
+      "image": {
+        "@type": "ImageObject",
+        "url": "https://tordar.no/DSC09739.jpeg",
+        "width": 1312,
+        "height": 1965
+      },
+      "description": "Full-stack developer based in Oslo, Norway...",
+      "sameAs": [
+        "https://github.com/tordar",
+        "https://www.linkedin.com/in/tordar",
+        "https://www.strava.com/athletes/29745314"
+      ],
+      "jobTitle": "Full-stack developer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Umain",
+        "url": "https://umain.com"
+      },
+      "knowsAbout": [
+        "React", "Next.js", "TypeScript", "JavaScript",
+        "Python", "MongoDB", "Azure", "Tailwind CSS",
+        "Web Development", "Full-stack Development"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://tordar.no/#website",
+      "name": "Tordar Tømmervik",
+      "url": "https://tordar.no",
+      "author": { "@id": "https://tordar.no/#person" }
+    },
+    {
+      "@type": "ProfilePage",
+      "@id": "https://tordar.no/#profilepage",
+      "name": "Tordar Tømmervik | Full-stack Developer",
+      "dateCreated": "2024-01-01",
+      "dateModified": "2026-03-31",
+      "mainEntity": { "@id": "https://tordar.no/#person" }
+    }
+  ]
+}
+```
+
+The `@graph` pattern lets entities reference each other by `@id`, creating a proper knowledge graph rather than isolated facts. The final schema score: 100/100, zero errors.
+
+## Issue 3: The head was full of noise
+
+The `layout.tsx` had accumulated several redundant and conflicting tags:
+
+- A hardcoded `<link rel="canonical" href="https://tordar.no/">` alongside the Next.js `metadata.alternates.canonical` — producing two canonical tags, one with a trailing slash and one without
+- A `<meta name="description">` duplicated by the metadata export
+- Three contradictory http-equiv cache tags (`Cache-Control: max-age=86400` + `Pragma: no-cache` + `Expires: 0`)
+- A legacy `<link rel="shortcut icon">` duplicating `<link rel="icon">`
+
+None of these were catastrophic individually, but together they signalled sloppy markup to crawlers and caused the dual canonical issue — a real SEO problem.
+
+All four were removed. The metadata export handles description, canonical, and OG tags cleanly in Next.js App Router — manual `<head>` tags for these are redundant and counterproductive.
+
+Also fixed: `og:description` was significantly thinner than the meta description, and the title said "Web Developer" in some places and "Full-stack Developer" in others. Consistency across title, OG, Twitter card, and JSON-LD matters for entity disambiguation.
+
+## Issue 4: The OG image didn't exist
+
+`layout.tsx` referenced `/og-image.png` in the Open Graph metadata but the file was never created — there was even a comment in the code: `// Create an Open Graph image`. Every social share of the site was returning a broken card.
+
+Generated it using sharp directly in Node from an SVG template:
+
+```javascript
+const svg = `<svg width="1200" height="630">...</svg>`
+sharp(Buffer.from(svg)).png().toFile('public/og-image.png')
+```
+
+1200×630, dark background matching the site theme, name + role + domain. Takes about 30 seconds to generate and never needs updating unless the branding changes.
+
+## Issue 5: No llms.txt
+
+llms.txt is an emerging standard ([llmstxt.org](https://llmstxt.org)) analogous to robots.txt but for AI systems. Rather than telling crawlers what they can access, it gives them a plain-text structured brief about who you are and what your site contains — bypassing the need to render JavaScript, parse visual layouts, or guess at context.
+
+AI systems that support llms.txt can read it directly and use it to accurately summarise and cite your content. The file lives at `https://yourdomain.com/llms.txt`.
+
+The initial version was 231 words — functional but too thin for models to generate meaningful citations. Expanded to ~500 words covering:
+
+- A full prose About section with the strongest authority signal (Nyss, deployed in 20+ countries across Africa, Central Asia, and the Pacific) surfaced prominently
+- Professional experience at both Umain and Norwegian Red Cross with stack details
+- Project descriptions with enough context for AI systems to explain what each one does
+- Skills broken into Frontend / Backend / Tooling
+- Background paragraph (IR degree → self-taught arc — a differentiating detail)
+- CV link
+
+## Issue 6: Thin content pages being indexed
+
+Five Spotify statistics pages (`/stats`, `/top-albums`, `/top-artists`, `/top-songs`, `/top-albums-with-details`) were publicly indexed but no longer used. They had HTTP 200, no noindex, and a canonical pointing at the homepage — a classic thin/duplicate content signal. They were removed entirely along with their shared layout components.
+
+## Issue 7: The sitemap had a favicon in it
+
+`/public/sitemap.xml` — a legacy static file — contained two entries: the homepage and `https://tordar.no/favicon.ico`. Favicon files are not indexable content and should never appear in a sitemap. The file also had a hardcoded `lastmod` from 2024.
+
+The dynamic `sitemap.ts` (Next.js App Router) already superseded it. The static file was deleted. The dynamic version was also updated to use a static date rather than `new Date()` — Google deprioritises lastmod signals from sites that update the timestamp on every deploy.
+
+## Issue 8: Missing security headers
+
+`vercel.json` didn't exist. Added it with four headers applied globally:
+
+```json
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+      ]
+    }
+  ]
+}
+```
+
+These don't directly affect rankings but are checked by Lighthouse, security scanners, and are minor trust signals.
+
+## Final scores
+
+| Category | Before | After |
+|---|---|---|
+| Technical SEO | 68/100 | 79/100 |
+| Schema / Structured Data | 38/100 | 100/100 |
+| Content Quality (E-E-A-T) | 58/100 | 68/100 |
+| GEO / AI Readiness | 32/100 | 70/100 |
+
+## What's still left
+
+The remaining gaps are content, not configuration — and deliberately left alone for now:
+
+- **Citability** is the lowest-scoring GEO dimension. The page has ~250 words of unique prose. AI models need 134–167 word extractable passages to generate accurate citations. A blog (planned) will fix this more effectively than any technical change.
+- **Heading labels** are generic ("About Me", "My Projects") rather than information-bearing. "Full-stack Developer in Oslo, Norway" is more extractable than "About Me."
+- **No external authority signals** — a link from an employer's team page or a published article would be worth more than any on-page change.
+
+The pattern that emerged: for a single-page portfolio, technical SEO is largely solvable in a day. GEO is ultimately a content problem. The infrastructure can be perfect and you'll still score around 70 without substantial prose for AI systems to extract and cite. The blog is the next step.
