@@ -12,7 +12,7 @@ export const mdxComponents: MDXComponents = {
     </h3>
   ),
   p: ({ children }) => (
-    <p className="text-base leading-[1.75] text-foreground-faint mb-6">
+    <p className="text-base leading-[1.75] text-foreground-secondary mb-6">
       {children}
     </p>
   ),
@@ -32,12 +32,12 @@ export const mdxComponents: MDXComponents = {
     </blockquote>
   ),
   ul: ({ children }) => (
-    <ul className="list-disc pl-6 mb-6 text-foreground-faint space-y-2">
+    <ul className="list-disc pl-6 mb-6 text-foreground-secondary space-y-2">
       {children}
     </ul>
   ),
   ol: ({ children }) => (
-    <ol className="list-decimal pl-6 mb-6 text-foreground-faint space-y-2">
+    <ol className="list-decimal pl-6 mb-6 text-foreground-secondary space-y-2">
       {children}
     </ol>
   ),

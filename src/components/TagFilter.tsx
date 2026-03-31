@@ -29,13 +29,13 @@ export function TagFilter({ tags, selectedTags, onTagToggle }: TagFilterProps) {
 
           <div className="flex flex-col gap-3 pl-3.5">
             {tags.map(tag => (
-              <label
+              <button
                 key={tag.name}
+                onClick={() => onTagToggle(tag.name)}
                 className="flex items-center gap-3 cursor-pointer text-foreground-muted text-sm hover:text-foreground-secondary transition-colors"
               >
                 <span
-                  onClick={() => onTagToggle(tag.name)}
-                  className={`w-[18px] h-[18px] rounded-[3px] border-[1.5px] flex-shrink-0 flex items-center justify-center cursor-pointer transition-colors ${
+                  className={`w-[18px] h-[18px] rounded-[3px] border-[1.5px] flex-shrink-0 flex items-center justify-center transition-colors ${
                     selectedTags.includes(tag.name)
                       ? 'bg-accent border-accent'
                       : 'border-border'
@@ -48,7 +48,7 @@ export function TagFilter({ tags, selectedTags, onTagToggle }: TagFilterProps) {
                   )}
                 </span>
                 {tag.name} ({tag.count})
-              </label>
+              </button>
             ))}
           </div>
         </div>

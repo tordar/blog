@@ -1,13 +1,6 @@
 import Link from 'next/link'
 import type { PostMeta } from '@/lib/types'
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  const day = String(d.getDate()).padStart(2, '0')
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const year = d.getFullYear()
-  return `${day}.${month}.${year}`
-}
+import { formatDate } from '@/lib/utils'
 
 export function PostRow({ post }: { post: PostMeta }) {
   return (
