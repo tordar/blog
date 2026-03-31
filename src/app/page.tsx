@@ -1,3 +1,9 @@
+import { getAllPostsMeta, getAllTags } from '@/lib/posts'
+import { BlogPage } from '@/components/BlogPage'
+
 export default function Home() {
-  return <div>blog.tordar.no</div>
+  const posts = getAllPostsMeta()
+  const tags = getAllTags()
+
+  return <BlogPage posts={posts} tags={tags} />
 }
