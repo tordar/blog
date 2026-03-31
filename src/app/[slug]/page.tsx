@@ -36,7 +36,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       {/* Two-column body */}
       <div className="flex flex-col md:flex-row px-6 md:px-10 pb-16 gap-8 md:gap-12">
         {/* Metadata sidebar */}
-        <aside className="w-full md:w-[240px] flex-shrink-0">
+        <aside className="w-full md:w-[240px] flex-shrink-0 md:sticky md:top-6 md:self-start">
           <PostMetadata
             date={post.date}
             readingTime={post.readingTime}
