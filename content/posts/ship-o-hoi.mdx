@@ -53,9 +53,13 @@ The stack is straightforward. [Navidrome](https://www.navidrome.org) runs on my 
 
 Metadata is handled by [beets](https://beets.io) with the [MusicBrainz](https://musicbrainz.org) backend. This is a great quality of life improvement. Bad metadata was the defining frustration of pre-streaming piracy. Wrong album art, chaotic filenames, missing track numbers. It's why people moved to iTunes, and eventually Spotify — centralised services that handled all of that for you. That problem is largely solved now. beets + MusicBrainz automatically matches your files against a massive, community-maintained database and applies clean, consistent metadata across your library. The tooling has genuinely caught up.
 
+<div className="md:float-right md:ml-8 md:w-52 mb-6">
+  <img src="/images/sldl-screenshot.png" alt="The sldl web wrapper — search by artist or album, hit Download, done." className="rounded-lg w-full" />
+</div>
+
 To get new music, I built a small web wrapper around the Soulseek command-line binary, hosted on my NAS, accessible via VPN. I can queue a download from anywhere — a new album I've heard about, something I want to revisit — and it lands in my music library within minutes.
 
-![The sldl web wrapper — search by artist or album, hit Download, done.](/images/sldl-screenshot.png)
+<div className="clear-both" />
 
 The full setup:
 - **Navidrome** — music server, streaming, library management
