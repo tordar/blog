@@ -49,4 +49,15 @@ The practical setup: I built a small web wrapper around the Soulseek command-lin
 
 ## The server
 
+The stack is straightforward. [Navidrome](https://www.navidrome.org) runs on my NAS — a lightweight, open source music server that streams to any device via any Subsonic-compatible client. It handles albums, artists, playlists, and recently played with no fuss.
+
+Metadata is handled by [beets](https://beets.io) with the [MusicBrainz](https://musicbrainz.org) backend. This is worth calling out: bad metadata was the defining frustration of pre-streaming piracy. Wrong album art, chaotic filenames, missing track numbers. It's why people moved to iTunes, and eventually Spotify — centralised services that handled all of that for you.
+
+That problem is largely solved now. beets + MusicBrainz automatically matches your files against a massive, community-maintained database and applies clean, consistent metadata across your library. The tooling has genuinely caught up.
+
+The full setup:
+- **Navidrome** — music server, streaming, library management
+- **beets + MusicBrainz** — metadata tagging
+- **Soulseek wrapper** — download new music directly to the server via VPN
+
 ## Where I landed
