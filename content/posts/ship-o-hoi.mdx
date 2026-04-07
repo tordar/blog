@@ -37,7 +37,15 @@ The answer is [ListenBrainz](https://listenbrainz.org) — an open source listen
 
 Once I had my history in ListenBrainz and my Spotify Pulse data cleaned up, I realised something: I could merge all of it — Spotify history, Navidrome library plays, everything — into a single continuous record. The switch didn't have to mean starting over. It meant continuing, just on different infrastructure.
 
-## Ship O'Hoi
+## Ship O'Hoi 🏴‍☠️
+
+The biggest reason people don't leave Spotify is that they have no music library. You can't just cancel and expect to have something to listen to. Ripping old CDs is the advice you'll find online — it's realistic if you have 20 albums, completely unrealistic if you want anything close to what Spotify offers. It keeps people subscribed.
+
+My solution was [Soulseek](https://www.slsknet.org) — a peer-to-peer file sharing network that's been around since 2000 and has never really gone away. It's not a torrent tracker. It's a direct connection between users sharing their music libraries. The quality is typically high, the catalogue is deep, and the community of people sharing is genuinely dedicated.
+
+Here's the part that made it feel defensible: I used my Spotify Pulse data — the cleaned, complete history of everything I'd ever listened to across 13 years — to generate a list of every artist and album I'd actually played. Then I downloaded it. Music I had already paid for, repeatedly, for over a decade. I wasn't building a pirate library. I was reconstructing one that was already mine.
+
+The practical setup: I built a small web wrapper around the Soulseek command-line binary, hosted on my NAS, accessible via VPN. I can queue a download from anywhere — a new album I've heard about, something I want to revisit — and it lands in my Navidrome library within minutes.
 
 ## The server
 
