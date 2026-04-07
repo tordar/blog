@@ -57,8 +57,10 @@ export const mdxComponents: MDXComponents = {
     </pre>
   ),
   img: ({ src, alt }) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt || ''} className="rounded-lg mb-6 w-full" />
+    <a href={src} target="_blank" rel="noopener noreferrer">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt={alt || ''} className="rounded-lg mb-6 w-full cursor-zoom-in" />
+    </a>
   ),
   hr: () => <hr className="border-border my-8" />,
 }
