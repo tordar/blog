@@ -45,8 +45,6 @@ My solution was [Soulseek](https://www.slsknet.org) — a peer-to-peer file shar
 
 Here's the part that made it feel defensible: I used my Spotify Pulse data — the cleaned, complete history of everything I'd ever listened to across 13 years — to generate a list of every artist and album I'd actually played. Then I downloaded it. Music I had already paid for, repeatedly, for over a decade. I wasn't building a pirate library. I was reconstructing one that was already mine.
 
-The practical setup: I built a small web wrapper around the Soulseek command-line binary, hosted on my NAS, accessible via VPN. I can queue a download from anywhere — a new album I've heard about, something I want to revisit — and it lands in my Navidrome library within minutes.
-
 ## The server
 
 The stack is straightforward. [Navidrome](https://www.navidrome.org) runs on my NAS — a lightweight, open source music server that streams to any device via any Subsonic-compatible client. It handles albums, artists, playlists, and recently played with no fuss.
@@ -54,6 +52,10 @@ The stack is straightforward. [Navidrome](https://www.navidrome.org) runs on my 
 Metadata is handled by [beets](https://beets.io) with the [MusicBrainz](https://musicbrainz.org) backend. This is worth calling out: bad metadata was the defining frustration of pre-streaming piracy. Wrong album art, chaotic filenames, missing track numbers. It's why people moved to iTunes, and eventually Spotify — centralised services that handled all of that for you.
 
 That problem is largely solved now. beets + MusicBrainz automatically matches your files against a massive, community-maintained database and applies clean, consistent metadata across your library. The tooling has genuinely caught up.
+
+I built a small web wrapper around the Soulseek command-line binary, hosted on my NAS, accessible via VPN. I can queue a download from anywhere — a new album I've heard about, something I want to revisit — and it lands in my music library within minutes.
+
+![The sldl web wrapper — search by artist or album, hit Download, done.](/images/sldl-screenshot.png)
 
 The full setup:
 - **Navidrome** — music server, streaming, library management
