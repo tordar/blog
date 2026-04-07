@@ -5,55 +5,55 @@ tags: [music, projects]
 summary: "How I left Spotify Premium after 13 years, built a self-hosted music server on my NAS, and used my own listening data to solve the cold start problem."
 ---
 
-I cancelled Spotify Premium last year after 13 years. My setup isn't necessarily better — but it's mine. I own my listening data, I know where my money goes, and for the first time I have a complete picture of everything I've listened to since 2012.
+I cancelled Spotify Premium this year after 13 years. I now own, host and stream my own music. I also own and control my listening data, I know where my money goes, and for the first time I have a complete picture of everything I've listened to since 2012.
 
 ## The data rabbit hole
 
-It started with a side project. I wanted to visualise my full Spotify listening history — not just the year-end Wrapped summary, but everything, going back to when I first signed up. So I built [Spotify Pulse](https://github.com/tordar/spotify-pulse): a dashboard that processes your exported listening history into stats, charts, genre graphs, and a heatmap of every day you've ever listened.
+It started with a side project. One of the reasons I learned to make websites in the first place, was because I wanted to visualise my Spotify listening history — not just the year-end Wrapped summary, but everything, going back to when I first signed up. So this year, I finally did it. I built [Spotify Pulse](https://github.com/tordar/spotify-pulse): a dashboard that processes all my exported listening history into stats, charts, graphs, a heatmap of every day you've ever listened, and even a feature for projected yearly listening time.
 
-Getting the data out of Spotify was its own challenge. Their GDPR export is the legal minimum they can get away with — duplicate entries, inconsistent track IDs, different versions of the same song treated as separate plays. It took a significant amount of cleaning to get it into a usable state.
+Getting anything useful from the data Spotify legally has to give you is its own challenge. Their GDPR export is the bare minimum they can get away with — duplicate entries, inconsistent track IDs, different versions of the same song treated as separate plays. The biggest challenge was just cleaning the data to get it into a usable state.
 
 But once it was clean, I had something complete. Every track, every artist, every album, going back over a decade.
 
-That's when the frustration set in. Spotify Wrapped — the one moment a year they let you see your own data — is one of their most valuable marketing assets. [Wrapped pulled over 200 million engaged users in the first 24 hours of its 2025 launch](https://techcrunch.com/2025/12/04/spotify-says-wrapped-2025-is-its-biggest-yet-with-200m-users-in-its-first-day/). They guard your listening history precisely because it's worth something. To them.
+Why was this so difficult? Spotify Wrapped — the one moment a year they let you see your own data — is one of their most valuable marketing assets. [Wrapped pulled over 200 million engaged users in the first 24 hours of its 2025 launch](https://techcrunch.com/2025/12/04/spotify-says-wrapped-2025-is-its-biggest-yet-with-200m-users-in-its-first-day/). They guard your listening history precisely because it's one of their most valuable assets.
+
+The idea was also to build this out to a product anyone could use but the past few months, Spotify has severly cracked down on anything resembling fun ideas like this, by [limiting access to their API for developers](https://www.techbuzz.ai/articles/spotify-locks-down-api-access-with-premium-only-requirement)
 
 ## The math didn't add up
 
-I was paying 139 kr a month. That's roughly 1,668 kr a year — for over a decade.
+I was paying 139 NOK a month. That's roughly 1,668 NOK a year — for over a decade.
 
-Here's where it goes: Spotify takes around 30% off the top. The remaining 70% goes into a royalty pool divided by share of total platform streams — not based on what *you* specifically listen to. The structural problem: if you mostly listen to indie acts, your subscription fee still flows disproportionately toward whoever dominates total stream counts platform-wide. And the per-stream rate for an individual indie artist is tiny — fractions of a cent.
+Here's where it goes: Spotify takes around 30% off the top. The remaining 70% goes into a royalty pool distributed not based on what *you* listen to, but proportionally across all streams on the platform. That means the artists you actually care about — the indie acts, the smaller labels — get a fraction of a fraction. The bulk of the payout flows to the major labels, whose artists dominate total stream counts.
 
-Bon Iver — one of the most critically acclaimed artists of the last 15 years — has spoken publicly about how little he receives from streaming. [The numbers are genuinely shocking](https://thetrichordist.com/2020/03/05/2019-2020-streaming-price-bible-youtube-is-still-the-1-problem-to-solve/) when you work them out per stream.
+I tried to calculate how much Bon Iver (my second ever most played artist) has received from my music streams from the past 13 years, and it came to something like 50 NOK, and after label, publishers etc. has gotten their share, Justin Vernon has most likely received about 10 NOK from me from my ~1500 streams.
 
 Meanwhile, Spotify's CEO [Daniel Ek led a €600 million investment into Helsing](https://djmag.com/news/spotifys-daniel-ek-leads-eu600-million-investment-ai-military-defence-company) — an AI military defence company building battlefield analysis systems. Artists are told streaming economics are just the reality of the market. The CEO is funding autonomous weapons.
 
-I'm not saying I had a clean solution. But I stopped feeling good about where my money was going.
+I'm not saying I had a clean solution, but after a decade plus of being a die hard loyal Spotify Premium subscriber, I started looking for new ways to listen to music.
 
 ## Owning your listening history
 
-One of the invisible costs of leaving Spotify is the fear of losing your history. Wrapped is bad, but at least it's something. What happens to 13 years of data if you walk away?
+One of the invisible costs of leaving Spotify is the fear of losing your history. Wrapped is, at best, extremely limited, but at least it's something. What happens to 13 years of data if you walk away?
 
 The answer is [ListenBrainz](https://listenbrainz.org) — an open source listening tracker run by the MetaBrainz Foundation. You can import your full Spotify history, then continue tracking going forward from any source. Your scrobbles are yours, stored in a system you can query, export, and own indefinitely.
 
-Once I had my history in ListenBrainz and my Spotify Pulse data cleaned up, I realised something: I could merge all of it — Spotify history, Navidrome library plays, everything — into a single continuous record. The switch didn't have to mean starting over. It meant continuing, just on different infrastructure.
+Once I had my history in ListenBrainz and my Spotify Pulse data cleaned up, I was in a good place to start building my music library — The switch didn't have to mean starting over. It meant continuing, just on different infrastructure.
 
 ## Ship O'Hoi 🏴‍☠️
 
-The biggest reason people don't leave Spotify is that they have no music library. You can't just cancel and expect to have something to listen to. Ripping old CDs is the advice you'll find online — it's realistic if you have 20 albums, completely unrealistic if you want anything close to what Spotify offers. It keeps people subscribed.
+The biggest reason people don't leave Spotify is that they have no music library. You also can't realistically expect people to just cancel and start paying full price for all the music they want to listen to, starting from scratch. Ripping old CDs is the advice you'll find online — it's realistic if you have 20 albums you want to listen to, completely unrealistic if you want anything close to what Spotify offers. This keeps people subscribed.
 
-My solution was [Soulseek](https://www.slsknet.org) — a peer-to-peer file sharing network that's been around since 2000 and has never really gone away. It's not a torrent tracker. It's a direct connection between users sharing their music libraries. The quality is typically high, the catalogue is deep, and the community of people sharing is genuinely dedicated.
+My solution was [Soulseek](https://www.slsknet.org) — a peer-to-peer file sharing network that's been around since 2000 and has never really gone away. It's not a torrent tracker. It's a direct connection between users sharing their music libraries. The quality is typically high, the catalogue is deep, and there's a massive community of people sharing their data.
 
-Here's the part that made it feel defensible: I used my Spotify Pulse data — the cleaned, complete history of everything I'd ever listened to across 13 years — to generate a list of every artist and album I'd actually played. Then I downloaded it. Music I had already paid for, repeatedly, for over a decade. I wasn't building a pirate library. I was reconstructing one that was already mine.
+Using my Spotify Pulse data — I had a cleaned, complete history of everything I'd ever listened to across 13 years — allowing me to get a list of every artist and album I'd actually played. On GitHub, I found a [Soulseek batch downloading tool](https://github.com/fiso64/sldl), that allows you to download hundreds of albums in a row, from a csv file. Making it possible to create my own music library of music I had already paid for, repeatedly, for over a decade.
 
 ## The server
 
 The stack is straightforward. [Navidrome](https://www.navidrome.org) runs on my NAS — a lightweight, open source music server that streams to any device via any Subsonic-compatible client. It handles albums, artists, playlists, and recently played with no fuss.
 
-Metadata is handled by [beets](https://beets.io) with the [MusicBrainz](https://musicbrainz.org) backend. This is worth calling out: bad metadata was the defining frustration of pre-streaming piracy. Wrong album art, chaotic filenames, missing track numbers. It's why people moved to iTunes, and eventually Spotify — centralised services that handled all of that for you.
+Metadata is handled by [beets](https://beets.io) with the [MusicBrainz](https://musicbrainz.org) backend. This is a great quality of life improvement. Bad metadata was the defining frustration of pre-streaming piracy. Wrong album art, chaotic filenames, missing track numbers. It's why people moved to iTunes, and eventually Spotify — centralised services that handled all of that for you. That problem is largely solved now. beets + MusicBrainz automatically matches your files against a massive, community-maintained database and applies clean, consistent metadata across your library. The tooling has genuinely caught up.
 
-That problem is largely solved now. beets + MusicBrainz automatically matches your files against a massive, community-maintained database and applies clean, consistent metadata across your library. The tooling has genuinely caught up.
-
-I built a small web wrapper around the Soulseek command-line binary, hosted on my NAS, accessible via VPN. I can queue a download from anywhere — a new album I've heard about, something I want to revisit — and it lands in my music library within minutes.
+To get new music, I built a small web wrapper around the Soulseek command-line binary, hosted on my NAS, accessible via VPN. I can queue a download from anywhere — a new album I've heard about, something I want to revisit — and it lands in my music library within minutes.
 
 ![The sldl web wrapper — search by artist or album, hit Download, done.](/images/sldl-screenshot.png)
 
