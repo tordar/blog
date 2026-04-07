@@ -9,13 +9,13 @@ I cancelled Spotify Premium this year after 13 years. I now own, host and stream
 
 ## The data rabbit hole
 
-It started with a side project. One of the reasons I learned to make websites in the first place, was because I wanted to visualise my Spotify listening history — not just the year-end Wrapped summary, but everything, going back to when I first signed up. So this year, I finally did it. I built [Spotify Pulse](https://github.com/tordar/spotify-pulse): a dashboard that processes all my exported listening history into stats, charts, graphs, a heatmap of every day you've ever listened, and even a feature for projected yearly listening time.
+It started with a side project. One of the reasons I learned to make websites in the first place was because I wanted to visualise my Spotify listening history — not just the year-end Wrapped summary, but everything, going back to when I first signed up. So this year, I finally did it. I built [Spotify Pulse](https://github.com/tordar/spotify-pulse): a dashboard that processes all my exported listening history into stats, charts, graphs, a heatmap of every day you've ever listened, and even a feature for projected yearly listening time.
 
 Getting anything useful from the data Spotify legally has to give you is its own challenge. Their GDPR export is the bare minimum they can get away with — duplicate entries, inconsistent track IDs, different versions of the same song treated as separate plays. The biggest challenge was just cleaning the data to get it into a usable state.
 
 But once it was clean, I had something complete. Every track, every artist, every album, going back over a decade.
 
-Why was this so difficult? Spotify Wrapped — the one moment a year they let you see your own data — is one of their most valuable marketing assets. [Wrapped pulled over 200 million engaged users in the first 24 hours of its 2025 launch](https://techcrunch.com/2025/12/04/spotify-says-wrapped-2025-is-its-biggest-yet-with-200m-users-in-its-first-day/). They guard your listening history precisely because it's one of their most valuable assets.
+Why was this so difficult? Spotify Wrapped — the one moment a year they let you see your own data is a huge marketing tool, as seen last year when [wrapped pulled over 200 million engaged users in the first 24 hours of its 2025 launch](https://techcrunch.com/2025/12/04/spotify-says-wrapped-2025-is-its-biggest-yet-with-200m-users-in-its-first-day/). They guard your listening history precisely because it's one of their most valuable assets.
 
 The idea was also to build this out to a product anyone could use but the past few months, Spotify has severly cracked down on anything resembling fun ideas like this, by [limiting access to their API for developers](https://www.techbuzz.ai/articles/spotify-locks-down-api-access-with-premium-only-requirement)
 
@@ -23,9 +23,9 @@ The idea was also to build this out to a product anyone could use but the past f
 
 I was paying 139 NOK a month. That's roughly 1,668 NOK a year — for over a decade.
 
-Here's where it goes: Spotify takes around 30% off the top. The remaining 70% goes into a royalty pool distributed not based on what *you* listen to, but proportionally across all streams on the platform. That means the artists you actually care about — the indie acts, the smaller labels — get a fraction of a fraction. The bulk of the payout flows to the major labels, whose artists dominate total stream counts.
+Here's where it goes: Spotify takes around 30% off the top. The remaining 70% goes into a royalty pool divided by share of total platform streams — not based on what *you* specifically listen to. The structural problem: if you mostly listen to indie acts, your subscription fee still flows disproportionately toward whoever dominates total stream counts platform-wide. And the per-stream rate for an individual indie artist is tiny — fractions of a cent.
 
-I tried to calculate how much Bon Iver (my second ever most played artist) has received from my music streams from the past 13 years, and it came to something like 50 NOK, and after label, publishers etc. has gotten their share, Justin Vernon has most likely received about 10 NOK from me from my ~1500 streams.
+I tried to calculate how much Bon Iver (my second most played artist ever) has received from my music streams from the past 13 years, and it came to something like 50 NOK, and after label, publishers etc. have gotten their share, Justin Vernon has most likely received about 10 NOK from me from my ~1500 streams.
 
 Meanwhile, Spotify's CEO [Daniel Ek led a €600 million investment into Helsing](https://djmag.com/news/spotifys-daniel-ek-leads-eu600-million-investment-ai-military-defence-company) — an AI military defence company building battlefield analysis systems. Artists are told streaming economics are just the reality of the market. The CEO is funding autonomous weapons.
 
@@ -45,7 +45,9 @@ The biggest reason people don't leave Spotify is that they have no music library
 
 My solution was [Soulseek](https://www.slsknet.org) — a peer-to-peer file sharing network that's been around since 2000 and has never really gone away. It's not a torrent tracker. It's a direct connection between users sharing their music libraries. The quality is typically high, the catalogue is deep, and there's a massive community of people sharing their data.
 
-Using my Spotify Pulse data — I had a cleaned, complete history of everything I'd ever listened to across 13 years — allowing me to get a list of every artist and album I'd actually played. On GitHub, I found a [Soulseek batch downloading tool](https://github.com/fiso64/sldl), that allows you to download hundreds of albums in a row, from a csv file. Making it possible to create my own music library of music I had already paid for, repeatedly, for over a decade.
+Using my Spotify Pulse data — I had a cleaned, complete history of everything I'd ever listened to across 13 years — allowing me to get a list of every artist and album I'd actually played. On GitHub, I found a [Soulseek batch downloading tool](https://github.com/fiso64/sldl), that allows you to download hundreds of albums in a row, from a csv file. Making it possible to create my own music library of music I had already paid for, repeatedly, for over a decade. 
+
+I also put together a script that would match the listens from Spotify with the new local files, and pushed all the historical listening data into the local files. Now, my just downloaded, London Calling album now has 407 listens. 408, after I listen to Train in Vain again. 
 
 ## The server
 
@@ -59,19 +61,20 @@ Metadata is handled by [beets](https://beets.io) with the [MusicBrainz](https://
 
 To get new music, I built a small web wrapper around the Soulseek command-line binary, getting the best album matches from MusicBrainz, hosted on my NAS, accessible via VPN and direct on my phone as a progressive web app. I can queue a download from anywhere — a new album I've heard about, something I want to revisit — and it lands in my music library within minutes.
 
+For actually listening to the music, we have the exciting opportunity of looking for new client applications. For mobile, I use [Arpeggi](https://testflight.apple.com/join/LDWqgjAs), which is fast and lightweight, and gives me the most Spotify-like UI experience of anything I've found. For desktop, we use an incredible application called [Feishin](https://github.com/jeffvli/feishin) which gives you all the listening data directly in the application.
+
 <div className="clear-both" />
 
 The full setup:
 - **Navidrome** — music server, streaming, library management
 - **beets + MusicBrainz** — metadata tagging
 - **Soulseek wrapper** — download new music directly to the server via VPN
+- **Arpeggi / Feishin** - client applications to actually play the music
 
 ## Where I landed
 
 I'm 99% off Spotify. I keep the free tier installed for checking out a new single occasionally — that's it. Premium is gone.
 
-What I have instead: a library I've built and own, a listening history that's mine permanently, a visual that merges everything across Spotify and Navidrome into one continuous record, and full control over where my money goes when I choose to spend it on music.
+What I have instead: a library I've built and own, a listening history that's mine permanently, a visual that merges everything across Spotify and Navidrome into one continuous record, and full control over where my money goes each month when I expand my library to support my favorite artists.
 
-It's not a perfect system. It takes more intentionality than opening Spotify and hitting shuffle. But that intentionality is part of the point — I listen more carefully now, and I know my library in a way I never did when everything was just a search bar away.
-
-It works. And it's mine.
+I did recently pay 125 NOK for Bon Iver's [new live album](https://boniver.bandcamp.com/album/volumes-one-selections-from-music-concerts-2019-2023-bon-iver-6-piece-band), ten-folding my contribution over the past decade. 
