@@ -13,7 +13,7 @@ export function SortControls({ sortBy, onSortChange }: SortControlsProps) {
       <button
         onClick={() => onSortChange('date')}
         className={`text-xs uppercase tracking-[1px] font-medium transition-colors ${
-          sortBy === 'date' ? 'text-foreground-faint' : 'text-foreground-faint/30'
+          sortBy === 'date' ? 'text-foreground-secondary' : 'text-foreground-faint'
         }`}
       >
         / DATE
@@ -21,7 +21,7 @@ export function SortControls({ sortBy, onSortChange }: SortControlsProps) {
       <button
         onClick={() => onSortChange('name')}
         className={`text-xs uppercase tracking-[1px] font-medium transition-colors ${
-          sortBy === 'name' ? 'text-foreground-faint' : 'text-foreground-faint/30'
+          sortBy === 'name' ? 'text-foreground-secondary' : 'text-foreground-faint'
         }`}
       >
         / NAME

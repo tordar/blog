@@ -1,4 +1,4 @@
-# Blog Post Spec: Ship O'Hoi
+# Blog Post Spec: 🏴‍☠️ Ship O'Hoi: How I Left Spotify After 13 Years
 
 **Date:** 2026-04-07  
 **File:** `content/posts/ship-o-hoi.mdx`  
@@ -77,10 +77,10 @@ Short, settled close. Not triumphant. "It works, and it's mine."
 ## Frontmatter
 
 ```yaml
-title: "Ship O'Hoi"
+title: "🏴‍☠️ Ship O'Hoi: How I Left Spotify After 13 Years"
 date: 2026-04-07
 tags: [music, projects]
-summary: "How I left Spotify Premium after 13 years, built a self-hosted music server on my NAS, and used my own listening data to solve the cold start problem."
+summary: "🏴‍☠️ How I left Spotify Premium after 13 years, built a self-hosted music server on my NAS, and used my own listening data to solve the cold start problem."
 ```
 
 ---

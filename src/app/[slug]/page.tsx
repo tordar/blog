@@ -13,9 +13,27 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const post = getPostBySlug(slug)
   if (!post) return { title: 'Post Not Found' }
+  const url = `https://blog.tordar.no/${slug}`
   return {
     title: `${post.title} — Blog — Tordar Tømmervik`,
     description: post.summary,
+    openGraph: {
+      type: 'article',
+      url,
+      title: post.title,
+      description: post.summary,
+      publishedTime: post.date,
+      authors: ['Tordar Tømmervik'],
+      tags: post.tags,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.summary,
+    },
+    alternates: {
+      canonical: url,
+    },
   }
 }
 
@@ -24,8 +42,27 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   const post = getPostBySlug(slug)
   if (!post) notFound()
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.summary,
+    datePublished: post.date,
+    author: {
+      '@type': 'Person',
+      name: 'Tordar Tømmervik',
+      url: 'https://tordar.no',
+    },
+    url: `https://blog.tordar.no/${post.slug}`,
+    keywords: post.tags.join(', '),
+  }
+
   return (
     <article>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Title hero */}
       <div className="px-6 md:px-10 pt-12 pb-10">
         <h1 className="text-4xl md:text-[52px] font-bold text-foreground tracking-tight leading-[1.1] max-w-[900px]">
