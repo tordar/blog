@@ -20,12 +20,6 @@ export function Navigation() {
             Portfolio
           </a>
           <a
-            href="https://gallery.tordar.no"
-            className="text-foreground-muted px-3 py-1.5 hover:text-foreground transition-colors"
-          >
-            Gallery
-          </a>
-          <a
             href="https://github.com/tordar"
             className="text-foreground-muted px-3 py-1.5 hover:text-foreground transition-colors"
           >
