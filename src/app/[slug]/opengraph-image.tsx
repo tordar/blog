@@ -1,14 +1,12 @@
 import { ImageResponse } from 'next/og'
-import { getPostBySlug, getAllPostsMeta } from '@/lib/posts'
+import { getPostBySlug } from '@/lib/posts'
 import { formatDate } from '@/lib/utils'
+
+export const runtime = 'nodejs'
 
 export const alt = 'Blog post'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
-
-export function generateStaticParams() {
-  return getAllPostsMeta().map(post => ({ slug: post.slug }))
-}
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
