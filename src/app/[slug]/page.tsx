@@ -64,16 +64,16 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {/* Title hero */}
-      <div className="px-6 md:px-10 pt-12 pb-10">
+      <div className="px-6 md:px-10 pt-12 pb-10 max-w-[1400px]">
         <h1 className="text-4xl md:text-[52px] font-bold text-foreground tracking-tight leading-[1.1] max-w-[900px]">
           {post.title}
         </h1>
       </div>
 
       {/* Two-column body */}
-      <div className="flex flex-col md:flex-row px-6 md:px-10 pb-16 gap-8 md:gap-12">
+      <div className="flex flex-col md:flex-row px-6 md:px-10 pb-16 gap-8 md:gap-12 max-w-[1400px]">
         {/* Metadata sidebar */}
-        <aside className="w-full md:w-[240px] flex-shrink-0 md:sticky md:top-6 md:self-start">
+        <aside className="w-full md:w-[420px] flex-shrink-0 md:sticky md:top-6 md:self-start">
           <PostMetadata
             date={post.date}
             readingTime={post.readingTime}
@@ -84,7 +84,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         </aside>
 
         {/* Article content */}
-        <div className="flex-1 max-w-[680px]">
+        <div className="flex-1 min-w-0">
           <div className="text-[11px] uppercase tracking-[1.5px] text-foreground-dim font-medium pb-3.5 border-b border-border mb-7">
             / ARTICLE
           </div>

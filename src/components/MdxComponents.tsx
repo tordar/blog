@@ -63,4 +63,14 @@ export const mdxComponents: MDXComponents = {
     </a>
   ),
   hr: () => <hr className="border-border my-8" />,
+  Video: ({ src }: { src: string }) => (
+    <video
+      src={src}
+      autoPlay
+      loop
+      muted
+      playsInline
+      className="rounded-lg mb-6 w-full"
+    />
+  ),
 }
