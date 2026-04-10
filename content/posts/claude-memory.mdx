@@ -1,0 +1,155 @@
+---
+title: "Giving Claude Code a permanent memory"
+date: 2026-04-10
+tags: [dev, ai, tools]
+summary: "How I set up claude-memory-compiler to automatically capture every coding session into a searchable knowledge base — across all my projects."
+---
+
+One of the most frustrating things about working with AI coding assistants is that they forget everything. Every new session starts from zero. You explain the same context, re-establish the same patterns, and re-litigate the same decisions you made two weeks ago.
+
+I wanted a system that remembers. Not just the current project, but everything — patterns I've figured out, solutions to problems I've hit before, decisions and the reasoning behind them.
+
+## What I tried first
+
+I looked at a few options. Anthropic has a built-in system called AutoDream that consolidates memory files, and there's a popular workflow that combines Claude Code with Google's NotebookLM as a knowledge base. Both are useful, but they solve slightly different problems. AutoDream prunes memory you've already written. NotebookLM is better as a research intake tool than a coding memory.
+
+What I actually wanted was something that captures sessions automatically, without me having to do anything.
+
+## claude-memory-compiler
+
+I ended up with [claude-memory-compiler](https://github.com/coleam00/claude-memory-compiler) by Cole Medin, inspired by Andrej Karpathy's LLM Knowledge Base architecture. The idea: your conversations compile themselves into a searchable knowledge base.
+
+When a session ends, a hook captures the transcript and spawns a background process that uses the Claude Agent SDK to extract what's worth saving — decisions, patterns, gotchas, lessons learned. These go into a daily log. Once a day, a compiler agent turns those logs into structured, cross-referenced wiki articles. The next session starts with the knowledge index already injected into context.
+
+It stores everything as plain markdown with Obsidian-style `[[wikilinks]]`, so it doubles as an Obsidian vault with a graph view.
+
+## Setup
+
+The following steps are written to be runnable end-to-end. If you're reading this in Claude Code, you can ask it to execute each block.
+
+### 1. Install uv and clone the repo
+
+Clone into your home Documents folder so the knowledge base is shared across all your codebases — not tied to any single project.
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+git clone https://github.com/coleam00/claude-memory-compiler $HOME/Documents/claude-memory
+cd $HOME/Documents/claude-memory && $HOME/.local/bin/uv sync
+```
+
+### 2. Fix the uv path in the hook scripts
+
+The hook scripts call `uv` without a full path, which fails if `~/.local/bin` isn't in your system PATH. Patch both files:
+
+```bash
+sed -i '' 's|"uv",|"'$HOME'/.local/bin/uv",|' $HOME/Documents/claude-memory/hooks/session-end.py
+sed -i '' 's|"uv",|"'$HOME'/.local/bin/uv",|' $HOME/Documents/claude-memory/hooks/pre-compact.py
+```
+
+### 3. Add global hooks to Claude Code
+
+Add the following to the `"hooks"` section of `~/.claude/settings.json`. This must go in the global settings file (not a project-level one) so the hooks fire across all your codebases.
+
+```json
+"SessionStart": [{
+  "matcher": "",
+  "hooks": [{
+    "type": "command",
+    "command": "cd $HOME/Documents/claude-memory && $HOME/.local/bin/uv run python hooks/session-start.py",
+    "timeout": 15
+  }]
+}],
+"PreCompact": [{
+  "matcher": "",
+  "hooks": [{
+    "type": "command",
+    "command": "cd $HOME/Documents/claude-memory && $HOME/.local/bin/uv run python hooks/pre-compact.py",
+    "timeout": 10
+  }]
+}],
+"SessionEnd": [{
+  "matcher": "",
+  "hooks": [{
+    "type": "command",
+    "command": "cd $HOME/Documents/claude-memory && $HOME/.local/bin/uv run python hooks/session-end.py",
+    "timeout": 10
+  }]
+}]
+```
+
+### 4. Set up a daily compile via LaunchAgent (macOS)
+
+This runs `compile.py` automatically at 4 PM every day, whether or not Claude Code is open. If the laptop is asleep at 4 PM, it runs on next wake.
+
+```bash
+cat > $HOME/Library/LaunchAgents/com.$(whoami).claude-memory-compile.plist << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.$(whoami).claude-memory-compile</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>$HOME/.local/bin/uv</string>
+        <string>run</string>
+        <string>--directory</string>
+        <string>$HOME/Documents/claude-memory</string>
+        <string>python</string>
+        <string>$HOME/Documents/claude-memory/scripts/compile.py</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>16</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>$HOME/Documents/claude-memory/scripts/compile-launchagent.log</string>
+    <key>StandardErrorPath</key>
+    <string>$HOME/Documents/claude-memory/scripts/compile-launchagent.log</string>
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>
+EOF
+
+launchctl load $HOME/Library/LaunchAgents/com.$(whoami).claude-memory-compile.plist
+```
+
+### 5. Restart Claude Code
+
+Close and reopen Claude Code. The SessionStart hook will fire at the beginning of every new session from here on.
+
+### 6. Run your first compile
+
+After your first session ends, run this to compile the daily log into knowledge articles:
+
+```bash
+cd $HOME/Documents/claude-memory && $HOME/.local/bin/uv run python scripts/compile.py
+```
+
+### 7. Open in Obsidian (optional)
+
+Open `~/Documents/claude-memory/` as a vault in Obsidian. The compiled articles use `[[wikilinks]]` and YAML frontmatter natively, so the graph view works without any configuration.
+
+## Cost
+
+Compilation uses the Claude Agent SDK, which runs on your existing Claude subscription (Max, Team, or Enterprise) — no separate API billing. Each daily compile costs roughly $0.20–0.30 equivalent in subscription quota.
+
+## Useful commands
+
+```bash
+# Manually trigger a compile
+cd $HOME/Documents/claude-memory && $HOME/.local/bin/uv run python scripts/compile.py
+
+# Query the knowledge base directly
+cd $HOME/Documents/claude-memory && $HOME/.local/bin/uv run python scripts/query.py "your question"
+
+# Run health checks on the knowledge base
+cd $HOME/Documents/claude-memory && $HOME/.local/bin/uv run python scripts/lint.py
+
+# Check what the hooks are capturing
+cat $HOME/Documents/claude-memory/scripts/flush.log
+```
