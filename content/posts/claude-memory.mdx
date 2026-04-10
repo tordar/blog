@@ -48,7 +48,9 @@ sed -i '' 's|"uv",|"'$HOME'/.local/bin/uv",|' $HOME/Documents/claude-memory/hook
 
 ### 3. Add global hooks to Claude Code
 
-Add the following to the `"hooks"` section of `~/.claude/settings.json`. This must go in the global settings file (not a project-level one) so the hooks fire across all your codebases.
+Open `~/.claude/settings.json` — this is your global Claude Code settings file, not a project-level one. If it doesn't exist yet, create it. Find the `"hooks"` key and add the following entries inside it. If you already have other hooks (e.g. `PreToolUse`), add these alongside them — don't replace the existing ones.
+
+If you're doing this in Claude Code, just say "add these hooks to my global settings.json" and paste the block — it will handle the merge.
 
 ```json
 "SessionStart": [{
